@@ -21,12 +21,12 @@ services:
       timeout: 10s
       retries: 6
 
-#  mongo:
-#    image: mongo:latest
-#    ports:
-#      - "27017:27017"
-#    volumes:
-#      - mongo-data:/data/db
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
 
   inbound-telemetry-service:
     build: ./InboundTelemetryService
@@ -40,5 +40,5 @@ services:
       KAFKA_BROKER: kafka:9092
 #      MONGO_URI: mongodb://mongo:27017
 
-#volumes:
-#  mongo-data:
+volumes:
+  mongo-data:

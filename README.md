@@ -1,8 +1,10 @@
 # GreenOpsStem
-GreenOps service
+GreenOps system backend
 
 # Docker Compose
+### UP
 `docker-compose up --build`
+###DOWN
 `docker-compose down`
 
 # Building and Running services in docker containers individually
