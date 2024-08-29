@@ -24,6 +24,16 @@ docker build -t gos-inbound-telemetry-service .
 
 `docker run -p 80:80 -e PYTHONUNBUFFERED=1 <image id>`
 
+#### curl command for testing:
+
+```
+curl --location 'http://localhost:80/process' \
+--header 'Content-Type: application/json' \
+--data '{
+    "query":"sanity"
+}'
+```
+
 #### Kafka consumer to listen on the service's output topic:
 
 `winpty docker exec -it greenopsstem-kafka-1 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic inbound-telemetry --from-beginning`

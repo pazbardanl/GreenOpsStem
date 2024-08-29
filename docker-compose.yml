@@ -37,6 +37,7 @@ services:
         condition: service_healthy
     environment:
       KAFKA_BROKER: kafka:9092
+      OUTPUT_KAFKA_TOPIC: inbound-telemetry
 
   data-writing-service:
     build: ./DataWritingService
@@ -45,8 +46,8 @@ services:
       - mongo
     environment:
       KAFKA_BROKER: kafka:9092
-      KAFKA_TOPIC: inbound-telemetry
-      MONGO_URI: mongodb://mongo:27017
+      INPUT_KAFKA_TOPIC: inbound-telemetry
+      OUTPUT_MONGO_URI: mongodb://mongo:27017
     restart: always
 
 volumes:
