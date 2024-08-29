@@ -39,7 +39,7 @@ services:
       KAFKA_BROKER: kafka:9092
       OUTPUT_KAFKA_TOPIC: inbound-telemetry
 
-  data-writing-service:
+  telemetry-writing-service:
     build: ./DataWritingService
     depends_on:
       - kafka
