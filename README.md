@@ -1,24 +1,50 @@
 # GreenOpsStem
-GreenOps service
+GreenOps system backend
 
 # Docker Compose
+### UP
 `docker-compose up --build`
+###DOWN
 `docker-compose down`
 
-# Building and Running services in docker containers individually
+# Services (as individual docker containers)
 
 ## InboundTelemetryService
+A rest API that accepts raw telemetry messages relays them to a kafka topic.
+* **Input**: REST endpoint `http://localhost:80/process`
+* **Output**: Kafka topic `inbound-telemetry`
 
-### Docker build
+#### Docker build
 ```
 cd InboundTelemetryService/
 docker build -t gos-inbound-telemetry-service .
 ```
 
-### Docker run
+#### Docker run
 
 `docker run -p 80:80 -e PYTHONUNBUFFERED=1 <image id>`
 
-### Kafka consumer to listen on the service's output topic:
+#### Kafka consumer to listen on the service's output topic:
 
 `winpty docker exec -it greenopsstem-kafka-1 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic inbound-telemetry --from-beginning`
+
+## DataWritingService
+Listens on Kafka topic(s) and writes data to Mongo collections. Collection and format of the persisted data depends on the input topic
+* **Input**: Kafka topic(s): `inbound-telemetry`
+* **Output** Mongo collections: 
+
+#### Docker build
+```
+cd DataWritingService/
+docker build -t gos-data-writing-service .
+```
+
+#### Docker run
+`docker run -e PYTHONUNBUFFERED=1 <image id>`
+
+_(this will probably fail to run outside docker compose since no kafka broker nor mongo db are available when running this service standalone)_
+
+#### Querying output Mongo collection of the service's output
+`docker exec greenopsstem-mongo-1 mongosh --eval 'db.getSiblingDB("gos_mongo").inbound_telemetry.find().pretty()'`
+
+`docker exec greenopsstem-mongo-1 mongosh --eval 'db.adminCommand("listDatabases")'`

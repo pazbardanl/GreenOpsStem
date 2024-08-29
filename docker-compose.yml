@@ -21,12 +21,12 @@ services:
       timeout: 10s
       retries: 6
 
-#  mongo:
-#    image: mongo:latest
-#    ports:
-#      - "27017:27017"
-#    volumes:
-#      - mongo-data:/data/db
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
 
   inbound-telemetry-service:
     build: ./InboundTelemetryService
@@ -35,10 +35,19 @@ services:
     depends_on:
       kafka:
         condition: service_healthy
-#      - mongo
     environment:
       KAFKA_BROKER: kafka:9092
-#      MONGO_URI: mongodb://mongo:27017
 
-#volumes:
-#  mongo-data:
+  data-writing-service:
+    build: ./DataWritingService
+    depends_on:
+      - kafka
+      - mongo
+    environment:
+      KAFKA_BROKER: kafka:9092
+      KAFKA_TOPIC: inbound-telemetry
+      MONGO_URI: mongodb://mongo:27017
+    restart: always
+
+volumes:
+  mongo-data:
