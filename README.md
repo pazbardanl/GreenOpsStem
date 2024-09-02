@@ -38,15 +38,14 @@ curl --location 'http://localhost:80/process' \
 
 `winpty docker exec -it greenopsstem-kafka-1 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic inbound-telemetry --from-beginning`
 
-## DataWritingService
-Listens on Kafka topic(s) and writes data to Mongo collections. Collection and format of the persisted data depends on the input topic
+## _TelemetryWritingService_ (DataWritingService)
 * **Input**: Kafka topic(s): `inbound-telemetry`
-* **Output** Mongo collections: 
+* **Output** Mongo collection: (DB:collection) `gos_mongo`:`inbound_telemetry`
 
 #### Docker build
 ```
 cd DataWritingService/
-docker build -t gos-data-writing-service .
+docker build -t gos-telemetry-writing-service .
 ```
 
 #### Docker run
