@@ -38,15 +38,18 @@ curl --location 'http://localhost:80/process' \
 
 `winpty docker exec -it greenopsstem-kafka-1 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic inbound-telemetry --from-beginning`
 
-## DataWritingService
-Listens on Kafka topic(s) and writes data to Mongo collections. Collection and format of the persisted data depends on the input topic
+#### view logs:
+
+`docker-compose logs -f inbound-telemetry-service`
+
+## _TelemetryWritingService_ (DataWritingService)
 * **Input**: Kafka topic(s): `inbound-telemetry`
-* **Output** Mongo collections: 
+* **Output** Mongo collection: (DB:collection) `gos_mongo`:`inbound_telemetry`
 
 #### Docker build
 ```
 cd DataWritingService/
-docker build -t gos-data-writing-service .
+docker build -t gos-telemetry-writing-service .
 ```
 
 #### Docker run
@@ -58,3 +61,30 @@ _(this will probably fail to run outside docker compose since no kafka broker no
 `docker exec greenopsstem-mongo-1 mongosh --eval 'db.getSiblingDB("gos_mongo").inbound_telemetry.find().pretty()'`
 
 `docker exec greenopsstem-mongo-1 mongosh --eval 'db.adminCommand("listDatabases")'`
+
+#### view logs:
+
+`docker-compose logs -f telemetry-writing-service`
+
+## TelemetryIngestService
+Read raw telemetry messages from a kafka topic, parses them and pushes the result into another kafka topic 
+* **Input**: Kafka topic `inbound-telemetry`
+* **Output**: Kafka topic `branch-energy`
+
+#### Docker build
+```
+cd InboundTelemetryService/
+docker build -t gos-telemetry-ingest-service .
+```
+
+#### Docker run
+
+`docker run -p 80:80 -e PYTHONUNBUFFERED=1 <image id>`
+
+#### Kafka consumer to listen on the service's output topic:
+
+`winpty docker exec -it greenopsstem-kafka-1 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic branch-energy --from-beginning`
+
+#### view logs:
+
+`docker-compose logs -f telemetry-ingest-service`

@@ -50,5 +50,15 @@ services:
       OUTPUT_MONGO_URI: mongodb://mongo:27017
     restart: always
 
+  telemetry-ingest-service:
+    build: ./TelemetryIngestService
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      KAFKA_BROKER: kafka:9092
+      INPUT_KAFKA_TOPIC: inbound-telemetry
+      OUTPUT_KAFKA_TOPIC: branch-energy
+
 volumes:
   mongo-data:
