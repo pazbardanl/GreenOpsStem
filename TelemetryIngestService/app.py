@@ -32,7 +32,7 @@ def parse_telemetry(raw_payload):
             'energy': raw_payload.get('payload').get('energy')
         }
     except Exception as e:
-        logger.info(f"Failed to parse telemetry message: {e}")
+        logger.error(f"Failed to parse telemetry message: {e}")
         parsed_record = {'error': f"Failed to parse telemetry message: {e}"}
     logger.info(f"parsed_record: {str(parsed_record)}")
     return parsed_record

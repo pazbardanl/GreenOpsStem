@@ -58,10 +58,13 @@ docker build -t gos-telemetry-writing-service .
 _(this will probably fail to run outside docker compose since no kafka broker nor mongo db are available when running this service standalone)_
 
 #### Querying output Mongo collection of the service's output
+Get all entries: 
+
 `docker exec greenopsstem-mongo-1 mongosh --eval 'db.getSiblingDB("gos_mongo").inbound_telemetry.find().pretty()'`
 
-`docker exec greenopsstem-mongo-1 mongosh --eval 'db.adminCommand("listDatabases")'`
+Get all entries sorted descending by timestamp:
 
+`docker exec greenopsstem-mongo-1 mongosh --eval 'db.getSiblingDB("gos_mongo").inbound_telemetry.find().sort({"timestamp": -1}).pretty()'`
 #### view logs:
 
 `docker-compose logs -f telemetry-writing-service`
@@ -88,3 +91,36 @@ docker build -t gos-telemetry-ingest-service .
 #### view logs:
 
 `docker-compose logs -f telemetry-ingest-service`
+
+## _BranchEnergyWritingService_ (DataWritingService)
+* **Input**: Kafka topic(s): `branch-energy`
+* **Output** Mongo collection: (DB:collection) `gos_mongo`:`branch_energy`
+
+#### Docker build
+```
+cd DataWritingService/
+docker build -t gos-branch-energy-writing-service .
+```
+
+#### Docker run
+`docker run -e PYTHONUNBUFFERED=1 <image id>`
+
+_(this will probably fail to run outside docker compose since no kafka broker nor mongo db are available when running this service standalone)_
+
+#### Querying output Mongo collection of the service's output
+Get all entries: 
+
+`docker exec greenopsstem-mongo-1 mongosh --eval 'db.getSiblingDB("gos_mongo").branch_energy.find().pretty()'`
+
+Get all entries sorted descending by payload_timestamp:
+
+`docker exec greenopsstem-mongo-1 mongosh --eval 'db.getSiblingDB("gos_mongo").branch_energy.find().sort({"payload_timestamp": -1}).pretty()'`
+
+Get all entries sorted descending by energy_timestamp:
+
+`docker exec greenopsstem-mongo-1 mongosh --eval 'db.getSiblingDB("gos_mongo").branch_energy.find().sort({"energy_timestamp": -1}).pretty()'`
+
+
+#### view logs:
+
+`docker-compose logs -f branch-energy-writing-service`
