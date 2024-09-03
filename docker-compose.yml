@@ -45,9 +45,12 @@ services:
       - kafka
       - mongo
     environment:
+      SERVICE_IDENTIFIER: telemetry-writing-service
       KAFKA_BROKER: kafka:9092
       INPUT_KAFKA_TOPIC: inbound-telemetry
       OUTPUT_MONGO_URI: mongodb://mongo:27017
+      OUTPUT_MONGO_DB: gos_mongo
+      OUTPUT_MONGO_COLLECTION: inbound_telemetry
     restart: always
 
   telemetry-ingest-service:
@@ -59,6 +62,20 @@ services:
       KAFKA_BROKER: kafka:9092
       INPUT_KAFKA_TOPIC: inbound-telemetry
       OUTPUT_KAFKA_TOPIC: branch-energy
+
+  branch-energy-writing-service:
+    build: ./DataWritingService
+    depends_on:
+      - kafka
+      - mongo
+    environment:
+      SERVICE_IDENTIFIER: branch-energy-writing-service
+      KAFKA_BROKER: kafka:9092
+      INPUT_KAFKA_TOPIC: branch-energy
+      OUTPUT_MONGO_URI: mongodb://mongo:27017
+      OUTPUT_MONGO_DB: gos_mongo
+      OUTPUT_MONGO_COLLECTION: branch_energy
+    restart: always
 
 volumes:
   mongo-data:
