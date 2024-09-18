@@ -124,3 +124,52 @@ Get all entries sorted descending by energy_timestamp:
 #### view logs:
 
 `docker-compose logs -f branch-energy-writing-service`
+
+## BranchEnergyReadingService
+* **Input**: Kafka topic(s): `branch-energy-data-request`
+* **Output**: Kafka topic(s): `branch-energy-data-response`
+
+#### Docker build
+```
+cd BranchEnergyReadingService/
+docker build -t gos-branch-energy-reading-service .
+```
+
+#### Docker run
+`docker run -e PYTHONUNBUFFERED=1 <image id>`
+
+_(this will probably fail to run outside docker compose since no kafka broker nor mongo db are available when running this service standalone)_
+
+#### Kafka producer to push queries on the service's request (input) topic:
+
+`winpty docker exec -it greenopsstem-kafka-1 kafka-console-producer.sh --bootstrap-server localhost:9092 --topic branch-energy-data-request`
+
+query schema:
+```
+{
+    "query_id": "ds90f8sd90f8sd09f8sdf",
+    "repo_name": "sanity-repo",
+    "branch_name": "sanity-branch"
+}
+```
+```
+{"query_id": "ds90f8sd90f8sd09f8sdf", "repo_name": "sanity-repo", "branch_name": "sanity-branch"}
+```
+
+#### Kafka consumer to listen on the service's response (output) topic:
+
+`winpty docker exec -it greenopsstem-kafka-1 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic branch-energy-data-response --from-beginning`
+
+response schema:
+```
+{
+    "query_id": query_id
+    "repo_name": repo_name,
+    "branch_name": branch_name,
+    **"energy": energy**
+}
+```
+
+#### view logs:
+
+`docker-compose logs -f branch-energy-reading-service`
