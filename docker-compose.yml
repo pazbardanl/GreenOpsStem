@@ -77,5 +77,19 @@ services:
       OUTPUT_MONGO_COLLECTION: branch_energy
     restart: always
 
+  branch-energy-reading-service:
+    build: ./BranchEnergyReadingService
+    depends_on:
+      - kafka
+      - mongo
+    environment:
+      KAFKA_BROKER: kafka:9092
+      QUERY_KAFKA_TOPIC: branch-energy-data-request
+      RESPONSE_KAFKA_TOPIC: branch-energy-data-response
+      MONGO_URI: mongodb://mongo:27017
+      MONGO_DB: gos_mongo
+      MONGO_COLLECTION: branch_energy
+    restart: always
+
 volumes:
   mongo-data:
