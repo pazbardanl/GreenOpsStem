@@ -80,16 +80,19 @@ services:
   branch-energy-reading-service:
     build: ./BranchEnergyReadingService
     depends_on:
-      - kafka
       - mongo
     environment:
-      KAFKA_BROKER: kafka:9092
-      QUERY_KAFKA_TOPIC: branch-energy-data-request
-      RESPONSE_KAFKA_TOPIC: branch-energy-data-response
+      SERVICE_IDENTIFIER: branch-energy-reading-service
       MONGO_URI: mongodb://mongo:27017
       MONGO_DB: gos_mongo
       MONGO_COLLECTION: branch_energy
+#    networks:
+#        - internal
     restart: always
+
+#networks:
+#  internal:
+#    driver: bridge
 
 volumes:
   mongo-data:
